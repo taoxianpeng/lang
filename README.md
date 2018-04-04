@@ -1,3 +1,2 @@
-# listingword
-听单词
-...
+# lang
+a application for learn English word.
