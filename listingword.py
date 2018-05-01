@@ -18,9 +18,9 @@ class core():
         self.word = word
         try:
             r = requests.get('http://www.iciba.com/'+self.word)
+            return r.text
         except Exception as e:
             print(e)
-        return r.text
 
     def getbs(self, html):
         bs = BeautifulSoup(html, 'lxml')
@@ -34,7 +34,7 @@ class core():
         url = 'https://dict.youdao.com/dictvoice?audio={word}&type=2'.format(
             word=self.word)
         mp3 = requests.get(url)
-        with open('first.mp3', 'wb') as f:
+        with open('en.mp3', 'wb') as f:
             f.write(mp3.content)
             f.close()
             # print('download ok...')
@@ -68,7 +68,7 @@ class core():
 
         zhmp3 = requests.get(get_mp3_url)
 
-        with open('end.mp3', 'wb') as f:
+        with open('zh.mp3', 'wb') as f:
             f.write(zhmp3.content)
             f.close()
             # print('zh-mp3 download ok ...')
@@ -104,14 +104,16 @@ class core():
             song.export(song3+'.mp3', format='mp3')
 
             print('预合并完毕 ...')
+            return '预合并完毕 ...'
 
     def combineToMP3(self, fileName):
         if not os.path.exists(fileName+'.mp3'):
-            self.combine('first', 'end', fileName)
+            self.combine('en', 'zh', fileName)
         else:
-            self.combine('first', 'end', 'word')
+            self.combine('en', 'zh', 'word')
             self.combine(fileName, 'word', fileName)
         print('合成完毕 ...')
+        return('合成完毕 ...')
 
     def launch(self, word, fileName, zh):
         self.getEN_mp3()

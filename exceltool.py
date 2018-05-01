@@ -10,7 +10,6 @@ from time import strftime, localtime
 from openpyxl import Workbook
 from openpyxl import load_workbook
 
-
 class iosys():
     def __init__(self):
         self.cwd = getcwd()
@@ -18,25 +17,27 @@ class iosys():
         self.excel_path = self.cwd+'/excel/' + self.ntime+'.xlsx'
         self.list_en = []
         self.list_zh = []
-
+    def createNew(self):
+        try:
+            wb = Workbook()
+            sheet = wb.active
+            sheet['A1'] = '此列填写单词'
+            wb.save(self.excel_path)
+            return (201,'保存成功,请打开Excel文件进行编辑')
+        except Exception as e:
+            print(e)
+            return (101,'创建Excel失败!')
     def readExcel_en(self):
         # 读取翻译(tls)、单词(en)
         if not exists(self.excel_path):
-            try:
-                wb = Workbook()
-                sheet = wb.active
-                sheet['A1'] = '此列填写单词'
-                wb.save(self.excel_path)
-                print('保存成功,请打开Excel文件进行编辑')
-                exit()
-            except Exception as e:
-                print(e)
+            info = self.createNew()            
+            return info
         try:
             wb = load_workbook(self.excel_path)
             sheet_ranges = wb['Sheet']
             if sheet_ranges['A1'].value == '此列填写单词':
                 print('单词列格式错误，请检查！')
-                exit()
+                return (102,'单词列格式错误，请检查！')
             cell_A = 1
             while True:
                 text = sheet_ranges['A{num}'.format(num=cell_A)].value
@@ -47,18 +48,11 @@ class iosys():
                     return self.list_en
         except Exception as e:
             print(e)
+            return (103,e)
     def readExcel_zh(self):
         # 读取翻译(tls)、单词(en)
         if not exists(self.excel_path):
-            try:
-                wb = Workbook()
-                sheet = wb.active
-                sheet['A1'] = '此列填写单词'
-                wb.save(self.excel_path)
-                print('保存成功,请打开Excel文件进行编辑')
-                exit()
-            except Exception as e:
-                print(e)
+            self.createNew()
         try:
             
             wb = load_workbook(self.excel_path)
@@ -76,7 +70,7 @@ class iosys():
                     return self.list_zh
 
         except Exception as e:
-            print(e)
+            return (105,e)
     
     def writeExcel(self, translation):
         zh = translation
@@ -88,8 +82,9 @@ class iosys():
                 sheet['B{num}'.format(num=i+1)] = zh[i]
             wb.save(self.excel_path)
             print('保存成功')
+            return (202,'写入成功，保存成功')
         except Exception as e:
-            print(e)
+            return (106,e)
 
 
 if __name__ == '__main__':
