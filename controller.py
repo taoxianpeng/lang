@@ -45,9 +45,7 @@ class main_frame(noname.Main):
             wx.MessageBox(e, '错误', wx.OK)
         if words[0] == 201:
             wx.MessageBox(e, '消息', wx.OK)
-        # if translations[0] == 201:
-        #     wx.MessageBox(e,'消息', wx.OK)
-        # self.m_button2.Disable()
+    
         fileName = getcwd()+'/mp3/'+time.strftime("%Y-%m-%d", time.localtime())
         tl = 0  # 统计 没有翻译的单词数量
         self.m_staticText3.SetLabel('')  # 清空
@@ -57,22 +55,17 @@ class main_frame(noname.Main):
                 html = one.getHtml(word)
                 bs = one.getbs(html)
                 zh = one.getZH_translation(bs)
-                if zh == '-1':
-                    tl += 1
                 translation.append(zh)
 
             iof.writeExcel(translation)
-                # if tl > 0:
-                #     self.m_staticText3.SetLabel('[WARNING]: 有{num}个单词没有翻译,需要手动填写!'.format(num=tl))
-                #     exit()
 
         for i in range(len(words)):
             if translation[i] == '-1':
                 tl += 1
-            print(tl)
         if tl > 0:
-            self.m_staticText3.SetLabel('[WARNING]: 有{num}个单词没有翻译,需要手动填写!'.format(num=tl))
-            exit()
+            # self.m_staticText3.SetLabel('[WARNING]: 有{num}个单词没有翻译,需要手动填写!'.format(num=tl))
+            wx.MessageBox('[WARNING]: 有{num}个单词没有翻译,需要手动填写!'.format(num=tl), '消息', wx.OK)
+            return 0
         else:
             for i in range(len(words)):
                 # print(words[i], translation[i])
