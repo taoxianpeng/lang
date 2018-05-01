@@ -1,11 +1,11 @@
 #!usr/bin/python
 # -*- coding: utf-8 -*-
 
-import json
-import os
+from json import loads as jsonLoads
+from os.path import exists as fileExists
+from sys import stdout
 from urllib.parse import quote
-
-import requests
+from requests import get as requests_get
 from bs4 import BeautifulSoup
 from pydub import AudioSegment
 
@@ -17,7 +17,7 @@ class core():
     def getHtml(self, word):
         self.word = word
         try:
-            r = requests.get('http://www.iciba.com/'+self.word)
+            r = requests_get('http://www.iciba.com/'+self.word)
             return r.text
         except Exception as e:
             print(e)
@@ -33,7 +33,7 @@ class core():
         # mp3 = requests.get(sound_url[1])
         url = 'https://dict.youdao.com/dictvoice?audio={word}&type=2'.format(
             word=self.word)
-        mp3 = requests.get(url)
+        mp3 = requests_get(url)
         with open('en.mp3', 'wb') as f:
             f.write(mp3.content)
             f.close()
@@ -66,7 +66,7 @@ class core():
         get_mp3_url = url+'?tex=' + \
             quote(tex)+'&lan=zh&cuid='+cuid+'&ctp=1&tok='+tok
 
-        zhmp3 = requests.get(get_mp3_url)
+        zhmp3 = requests_get(get_mp3_url)
 
         with open('zh.mp3', 'wb') as f:
             f.write(zhmp3.content)
@@ -80,13 +80,12 @@ class core():
         secret_key = '10d76d90116385e126d95e1c277c538c'
         get_token_url = url_token+'?'+'grant_type=client_credentials&client_id=' + \
             api_key+'&client_secret='+secret_key
-        token = requests.get(get_token_url)
-        r = json.loads(token.text)
-        # print(r['access_token'])
+        token = requests_get(get_token_url)
+        r = jsonLoads(token.text)
         return r['access_token']
 
     def combine(self, song1, song2, song3):
-        if os.path.exists(song1+'.mp3') and os.path.exists(song2+'.mp3'):
+        if fileExists(song1+'.mp3') and fileExists(song2+'.mp3'):
             song1 = AudioSegment.from_mp3(song1+'.mp3')
             song2 = AudioSegment.from_mp3(song2+'.mp3')
 
@@ -103,18 +102,15 @@ class core():
             song = song1 + song2
             song.export(song3+'.mp3', format='mp3')
 
-            print('预合并完毕 ...')
-            return '预合并完毕 ...'
+            print('预合成完成 ...',end = '\r')
 
     def combineToMP3(self, fileName):
-        if not os.path.exists(fileName+'.mp3'):
+        if not fileExists(fileName+'.mp3'):
             self.combine('en', 'zh', fileName)
         else:
             self.combine('en', 'zh', 'word')
             self.combine(fileName, 'word', fileName)
-        print('合成完毕 ...')
-        return('合成完毕 ...')
-
+        print('合成完毕 ...',end = '\r')
     def launch(self, word, fileName, zh):
         self.getEN_mp3()
         # zh = self.getZH_translation(bs)
