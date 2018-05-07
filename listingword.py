@@ -58,13 +58,24 @@ class core():
         return tex
 
     def getZN_mp3(self, usrToken, text):
+        # tex	必填	合成的文本，使用UTF-8编码。小于512个中文字或者英文数字。（文本在百度服务器内转换为GBK后，长度必须小于1024字节）
+        # tok	必填	开放平台获取到的开发者access_token（见上面的“鉴权认证机制”段落）
+        # cuid	必填	用户唯一标识，用来区分用户，计算UV值。建议填写能区分用户的机器 MAC 地址或 IMEI 码，长度为60字符以内
+        # ctp	必填	客户端类型选择，web端填写固定值1
+        # lan	必填	固定值zh。语言选择,目前只有中英文混合模式，填写固定值zh
+        # spd	选填	语速，取值0-9，默认为5中语速
+        # pit	选填	音调，取值0-9，默认为5中语调
+        # vol	选填	音量，取值0-9，默认为5中音量
+        # per	选填	发音人选择, 0为普通女声，1为普通男生，3为情感合成-度逍遥，4为情感合成-度丫丫，默认为普通女声
         cuid = 'taoxianpeng123'
         tok = str(usrToken)
         tex = text
         url = 'http://tsn.baidu.com/text2audio'
-        # print(tok)
+        spd = '5'
+        pit = '7'
+        per = '0'
         get_mp3_url = url+'?tex=' + \
-            quote(tex)+'&lan=zh&cuid='+cuid+'&ctp=1&tok='+tok
+            quote(tex)+'&lan=zh&cuid='+cuid+'&ctp=1&tok='+tok+'&spd='+spd+'&pit='+pit
 
         zhmp3 = requests_get(get_mp3_url)
 
